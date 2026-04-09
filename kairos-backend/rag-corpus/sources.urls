@@ -1,0 +1,8 @@
+# One HTTPS URL per line. Fetched at index time and embedded with local .md files.
+# Lines starting with # are ignored.
+
+# HashKey Chain Documentation
+# (Keep this list small and high-signal; everything here is fetched and indexed at startup.)
+https://docs.hashkeychain.net/
+https://docs.hashkeychain.net/docs/Build-on-HashKey-Chain/
+https://docs.hashkeychain.net/docs/Build-on-HashKey-Chain/Token-Contracts

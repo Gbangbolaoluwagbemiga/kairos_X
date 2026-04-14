@@ -43,7 +43,7 @@ type LocalQueryLog = {
     responseTimeMs: number;
     createdAt: string;
     txHash?: string;
-    /** Override the nominal USD amount shown before Horizon confirms (e.g. 0.005 for A2A) */
+    /** Override the nominal USD amount shown before on-chain confirmation (e.g. 0.005 for A2A) */
     nominalUsd?: number;
     /** 'credit' (default) = received payment, 'debit' = sent A2A payment */
     direction?: 'credit' | 'debit';
@@ -54,11 +54,11 @@ const AGENT_PRICING: Record<string, number> = {
     news: 0.001,
     yield: 0.001,
     tokenomics: 0.001,
-    "stellar-scout": 0.001, // Chain Scout (repurposed)
+    "chain-scout": 0.001, // Chain Scout
     perp: 0.001,
     protocol: 0.001,
     bridges: 0.001,
-    "stellar-dex": 0.001, // DEX (repurposed)
+    "dex-volumes": 0.001, // DEX Volumes
     scout: 0.001, // Chat alias used by Gemini; maps to Chain Scout line item.
 };
 
@@ -226,7 +226,7 @@ if (GROQ_API_KEY) {
 }
 
 // Log Treasury Public Key for debug
-const paymentsMode = String(process.env.KAIROS_PAYMENTS || "stellar").toLowerCase();
+const paymentsMode = String(process.env.KAIROS_PAYMENTS || "hashkey").toLowerCase();
 const isHashkeyMode = paymentsMode.startsWith("hash");
 if (!isHashkeyMode) {
     console.warn("⚠️ KAIROS_PAYMENTS is not set to hashkey; this deployment expects HashKey mode.");
@@ -427,11 +427,11 @@ app.get("/providers", async (req, res) => {
             { id: "news", name: "News Scout", category: "Analytics", description: "Crypto news & sentiment analysis. Breaking news, trending topics, and market-moving events.", price: "0.001" },
             { id: "yield", name: "Yield Optimizer", category: "DeFi", description: "Best DeFi yields across 500+ protocols. Filter by chain, APY, and TVL for optimal returns.", price: "0.001" },
             { id: "tokenomics", name: "Tokenomics Analyzer", category: "Analytics", description: "Token supply, distribution & unlock schedules. Inflation models and emission analysis.", price: "0.001" },
-            { id: "stellar-scout", name: "Chain Scout", category: "Infrastructure", description: "HashKey/EVM account facts (balance, nonce, contract detection) and chain-level context.", price: "0.001" },
+            { id: "chain-scout", name: "Chain Scout", category: "Infrastructure", description: "HashKey/EVM account facts (balance, nonce, contract detection) and chain-level context.", price: "0.001" },
             { id: "perp", name: "Perp Stats", category: "Trading", description: "Perpetual futures data from 7+ exchanges. Funding rates, open interest, and volume analysis.", price: "0.001" },
             { id: "protocol", name: "Protocol Stats", category: "DeFi", description: "TVL, fees & revenue for 100+ DeFi protocols via DeFiLlama. Cross-chain protocol comparisons.", price: "0.001" },
             { id: "bridges", name: "Bridge Monitor", category: "DeFi", description: "Cross-chain bridge volumes and activity. Track capital flows across chains.", price: "0.001" },
-            { id: "stellar-dex", name: "DEX Volumes", category: "Analytics", description: "DEX volume overview (by chain / top DEXs) via DeFiLlama.", price: "0.001" },
+            { id: "dex-volumes", name: "DEX Volumes", category: "Analytics", description: "DEX volume overview (by chain / top DEXs) via DeFiLlama.", price: "0.001" },
         ];
 
         const stats = await getAllAgentStats();
@@ -787,7 +787,7 @@ app.post("/ratings", async (req, res) => {
     res.json({ success: true, persisted: "supabase" });
 });
 
-// No Stellar x402 routes in HashKey build.
+// All payment routes run via HashKey Chain EVM.
 
 // Start Server
 app.listen(PORT, () => {

@@ -24,7 +24,7 @@ const FEATURED_AGENTS = [
   { id: 'scout',  name: 'Chain Scout',  desc: 'On-chain analytics & wallet facts', price: '0.001', color: '#34d399' },
   { id: 'yield',  name: 'Yield Optimizer', desc: 'DeFi APY aggregator',      price: '0.001', color: '#fbbf24' },
   { id: 'tokenomics', name: 'Tokenomics Analyzer', desc: 'Supply & unlock intelligence', price: '0.001', color: '#f47272' },
-  { id: 'stellar-scout', name: 'Chain Scout', desc: 'On-chain analytics for EVM networks', price: '0.001', color: '#22d3ee' },
+  { id: 'chain-scout', name: 'Chain Scout', desc: 'On-chain analytics for EVM networks', price: '0.001', color: '#22d3ee' },
   { id: 'perp', name: 'Perp Stats', desc: 'Funding, OI and perp market heat', price: '0.001', color: '#38bdf8' },
   { id: 'protocol', name: 'Protocol Stats', desc: 'TVL, fees, revenue by protocol', price: '0.001', color: '#fb7185' },
   { id: 'bridges', name: 'Bridge Monitor', desc: 'Cross-chain bridge flow tracking', price: '0.001', color: '#c084fc' },

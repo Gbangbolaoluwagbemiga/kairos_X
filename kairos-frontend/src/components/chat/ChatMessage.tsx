@@ -13,14 +13,14 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 const AGENT_COLORS: Record<string, { bg: string; dot: string; label: string }> = {
   oracle:         { bg: '#a78bfa18', dot: '#a78bfa', label: 'Price Oracle'       },
   news:           { bg: '#60a5fa18', dot: '#60a5fa', label: 'News Scout'         },
-  'stellar-scout':{ bg: '#34d39918', dot: '#34d399', label: 'Chain Scout'        },
+  'chain-scout': { bg: '#34d39918', dot: '#34d399', label: 'Chain Scout'        },
   scout:          { bg: '#34d39918', dot: '#34d399', label: 'Chain Scout'        },
   yield:          { bg: '#fbbf2418', dot: '#fbbf24', label: 'Yield Optimizer'    },
   tokenomics:     { bg: '#f4727218', dot: '#f47272', label: 'Tokenomics'         },
   perp:           { bg: '#38bdf818', dot: '#38bdf8', label: 'Perp Stats'         },
   protocol:       { bg: '#818cf818', dot: '#818cf8', label: 'Protocol Stats'     },
   bridges:        { bg: '#fb718518', dot: '#fb7185', label: 'Bridge Monitor'     },
-  'stellar-dex':  { bg: '#facc1518', dot: '#facc15', label: 'DEX'                },
+  'dex-volumes':  { bg: '#facc1518', dot: '#facc15', label: 'DEX'                },
 };
 
 interface A2APayment {

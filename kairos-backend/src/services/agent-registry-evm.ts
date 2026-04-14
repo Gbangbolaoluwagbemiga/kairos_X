@@ -21,10 +21,10 @@ const FALLBACK_AGENT_OWNERS: Record<string, string | undefined> = {
     yield: process.env.YIELD_EVM_ADDRESS,
     tokenomics: process.env.TOKENOMICS_EVM_ADDRESS,
     perp: process.env.PERP_EVM_ADDRESS,
-    "stellar-scout": process.env.STELLAR_SCOUT_EVM_ADDRESS,
+    "chain-scout": process.env.CHAIN_SCOUT_EVM_ADDRESS,
     protocol: process.env.PROTOCOL_EVM_ADDRESS,
     bridges: process.env.BRIDGES_EVM_ADDRESS,
-    "stellar-dex": process.env.STELLAR_DEX_EVM_ADDRESS,
+    "dex-volumes": process.env.DEX_VOLUMES_EVM_ADDRESS,
 };
 
 function toKeyBytes32(agentKey: string): string {

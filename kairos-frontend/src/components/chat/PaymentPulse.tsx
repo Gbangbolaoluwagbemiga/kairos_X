@@ -17,12 +17,12 @@ export function PaymentPulse({ agents, isVisible }: PaymentPulseProps) {
           initial={{ opacity: 0, y: 10, scale: 0.95 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, scale: 0.9 }}
-          className="flex flex-col gap-2 mb-4 p-3 rounded-2xl glass-card border border-stellar/20 bg-stellar/5 relative overflow-hidden"
+          className="flex flex-col gap-2 mb-4 p-3 rounded-2xl glass-card border border-accent-teal/20 bg-accent-teal/5 relative overflow-hidden"
         >
           {/* Background Glow */}
-          <div className="absolute inset-0 bg-gradient-to-r from-stellar/10 via-transparent to-transparent pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-r from-accent-teal/10 via-transparent to-transparent pointer-events-none" />
           
-          <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-stellar/80">
+          <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-accent-teal/80">
             <Coins className="w-3 h-3 animate-pulse" />
             <span>On-chain Micropayment Flow</span>
           </div>
@@ -40,18 +40,18 @@ export function PaymentPulse({ agents, isVisible }: PaymentPulseProps) {
                 initial={{ left: '0%' }}
                 animate={{ left: '100%' }}
                 transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
-                className="absolute top-1/2 -translate-y-1/2 w-8 h-8 bg-stellar/40 blur-xl rounded-full"
+                className="absolute top-1/2 -translate-y-1/2 w-8 h-8 bg-accent-teal/40 blur-xl rounded-full"
               />
               <motion.div
                 initial={{ left: '0%' }}
                 animate={{ left: '100%' }}
                 transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
-                className="absolute top-1/2 -translate-y-1/2 w-4 h-[200%] bg-stellar rounded-full shadow-[0_0_10px_#0891b2]"
+                className="absolute top-1/2 -translate-y-1/2 w-4 h-[200%] bg-accent-teal rounded-full shadow-[0_0_10px_#0891b2]"
               />
             </div>
 
             {/* Orchestrator Node */}
-            <div className="w-10 h-10 rounded-xl glass-primary flex items-center justify-center border border-stellar/40 shadow-[0_0_15px_rgba(8,145,178,0.3)]">
+            <div className="w-10 h-10 rounded-xl glass-primary flex items-center justify-center border border-accent-teal/40 shadow-[0_0_15px_rgba(8,145,178,0.3)]">
               <span className="text-[8px] font-black text-white">KAIROS</span>
             </div>
 
@@ -65,7 +65,7 @@ export function PaymentPulse({ agents, isVisible }: PaymentPulseProps) {
                   transition={{ delay: 0.5 + (i * 0.2) }}
                   className="flex items-center gap-1.5"
                 >
-                  <ArrowRight className="w-2.5 h-2.5 text-stellar/40" />
+                  <ArrowRight className="w-2.5 h-2.5 text-accent-teal/40" />
                   <div className="px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-[9px] font-medium whitespace-nowrap">
                     {agent.charAt(0).toUpperCase() + agent.slice(1)} • HSK
                   </div>
@@ -91,7 +91,7 @@ export function PaymentPulse({ agents, isVisible }: PaymentPulseProps) {
                    repeat: Infinity, 
                    delay: Math.random() * 2 
                  }}
-                 className="absolute w-1 h-1 bg-stellar rounded-full blur-[1px]"
+                 className="absolute w-1 h-1 bg-accent-teal rounded-full blur-[1px]"
                />
              ))}
           </div>

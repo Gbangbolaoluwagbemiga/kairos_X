@@ -30,7 +30,6 @@ const TOKEN_MAPPINGS: Record<string, { coingecko: string; mobula: string; name: 
     'wbtc': { coingecko: 'wrapped-bitcoin', mobula: 'wrapped-bitcoin', name: 'Wrapped Bitcoin' },
     'link': { coingecko: 'chainlink', mobula: 'chainlink', name: 'Chainlink' },
     'chainlink': { coingecko: 'chainlink', mobula: 'chainlink', name: 'Chainlink' },
-    'xlm': { coingecko: 'stellar', mobula: 'stellar', name: 'Stellar' },
     'xmr': { coingecko: 'monero', mobula: 'monero', name: 'Monero' },
     'sui': { coingecko: 'sui', mobula: 'sui', name: 'Sui' },
     'ltc': { coingecko: 'litecoin', mobula: 'litecoin', name: 'Litecoin' },

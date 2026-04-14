@@ -25,8 +25,8 @@ contract RegisterAgents is Script {
         _reg(registry, "perp", vm.envAddress("PERP_OWNER"), "Perp Stats", "perp", priceWei);
         _reg(registry, "protocol", vm.envAddress("PROTOCOL_OWNER"), "Protocol Stats", "protocol", priceWei);
         _reg(registry, "bridges", vm.envAddress("BRIDGES_OWNER"), "Bridge Monitor", "bridges", priceWei);
-        _reg(registry, "stellar-dex", vm.envAddress("STELLAR_DEX_OWNER"), "Stellar DEX", "stellar-dex", priceWei);
-        _reg(registry, "stellar-scout", vm.envAddress("STELLAR_SCOUT_OWNER"), "Stellar Scout", "stellar", priceWei);
+        _reg(registry, "dex-volumes", vm.envAddress("DEX_VOLUMES_OWNER"), "DEX Volumes", "dex-volumes", priceWei);
+        _reg(registry, "chain-scout", vm.envAddress("CHAIN_SCOUT_OWNER"), "Chain Scout", "chain-scout", priceWei);
 
         if (policyAddr != address(0) && dailyLimitWei > 0) {
             policy.setDailyLimit(keccak256(bytes("oracle")), dailyLimitWei);

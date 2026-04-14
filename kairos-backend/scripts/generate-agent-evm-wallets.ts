@@ -27,10 +27,10 @@ const AGENTS = [
     "yield",
     "tokenomics",
     "perp",
-    "stellar-scout",
+    "chain-scout",
     "protocol",
     "bridges",
-    "stellar-dex",
+    "dex-volumes",
 ] as const;
 
 const KEY_ENV_BY_AGENT: Record<(typeof AGENTS)[number], string> = {
@@ -39,10 +39,10 @@ const KEY_ENV_BY_AGENT: Record<(typeof AGENTS)[number], string> = {
     yield: "YIELD_EVM_PRIVATE_KEY",
     tokenomics: "TOKENOMICS_EVM_PRIVATE_KEY",
     perp: "PERP_EVM_PRIVATE_KEY",
-    "stellar-scout": "STELLAR_SCOUT_EVM_PRIVATE_KEY",
+    "chain-scout": "CHAIN_SCOUT_EVM_PRIVATE_KEY",
     protocol: "PROTOCOL_EVM_PRIVATE_KEY",
     bridges: "BRIDGES_EVM_PRIVATE_KEY",
-    "stellar-dex": "STELLAR_DEX_EVM_PRIVATE_KEY",
+    "dex-volumes": "DEX_VOLUMES_EVM_PRIVATE_KEY",
 };
 
 const ADDR_ENV_BY_AGENT: Record<(typeof AGENTS)[number], string> = {
@@ -51,10 +51,10 @@ const ADDR_ENV_BY_AGENT: Record<(typeof AGENTS)[number], string> = {
     yield: "YIELD_EVM_ADDRESS",
     tokenomics: "TOKENOMICS_EVM_ADDRESS",
     perp: "PERP_EVM_ADDRESS",
-    "stellar-scout": "STELLAR_SCOUT_EVM_ADDRESS",
+    "chain-scout": "CHAIN_SCOUT_EVM_ADDRESS",
     protocol: "PROTOCOL_EVM_ADDRESS",
     bridges: "BRIDGES_EVM_ADDRESS",
-    "stellar-dex": "STELLAR_DEX_EVM_ADDRESS",
+    "dex-volumes": "DEX_VOLUMES_EVM_ADDRESS",
 };
 
 function mustGetEnv(name: string): string {

@@ -48,14 +48,14 @@ In **Variables**, add at least:
 |----------|----------|--------|
 | `GROQ_API_KEY` | Yes | Groq API key |
 | `GROQ_MODEL` | No | Groq model id (default `llama-3.3-70b-versatile`) |
-| `STELLAR_SPONSOR_SECRET` | Yes for on-chain features | `S...` secret seed |
-| `STELLAR_NETWORK` | Optional | `testnet` (default) |
+| `HASHKEY_TREASURY_PRIVATE_KEY` | Yes for on-chain features | Treasury wallet private key |
+| `HASHKEY_RPC_URL` | Optional | HashKey testnet RPC (default built-in) |
 | `SUPABASE_URL` | Optional | If you use Supabase |
 | `SUPABASE_ANON_KEY` | Optional | |
 | `ALLOWED_ORIGINS` | **Yes for browser clients** | Comma-separated frontend URLs, e.g. `https://your-app.vercel.app,http://localhost:5173` |
 | `PORT` | No | Railway injects `PORT` automatically; the app reads it |
 
-Copy any other keys you use locally from `kairos-backend/.env` (e.g. `ORACLE_X402_ADDRESS`, `USDC_ISSUER_ADDRESS`, `KAIROS_*` tuning vars).
+Copy any other keys you use locally from `kairos-backend/.env` (e.g. `KAIROS_AGENT_REGISTRY_EVM_ADDRESS`, `KAIROS_SPENDING_POLICY_EVM_ADDRESS`, `KAIROS_*` tuning vars).
 
 ### 5. Networking
 

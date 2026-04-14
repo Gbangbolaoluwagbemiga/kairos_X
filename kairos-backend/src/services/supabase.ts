@@ -620,7 +620,7 @@ export interface AgentStats {
 export async function getAllAgentStats(): Promise<AgentStats[]> {
     if (!supabase) return [];
 
-    const agents = ['oracle', 'news', 'yield', 'tokenomics', 'stellar-scout', 'perp', 'protocol', 'bridges', 'stellar-dex'];
+    const agents = ['oracle', 'news', 'yield', 'tokenomics', 'chain-scout', 'perp', 'protocol', 'bridges', 'dex-volumes'];
 
     // Fetch all data in just 2 queries instead of 21
     const [queryLogsData, ratingsData] = await Promise.all([

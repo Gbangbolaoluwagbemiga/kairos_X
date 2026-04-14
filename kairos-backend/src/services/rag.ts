@@ -335,15 +335,15 @@ export async function retrieveRagAugmentation(userPrompt: string): Promise<RagAu
                     (u.includes("ai.google.dev") && u.includes("embeddings"))
                 );
             };
-            // For product questions, prefer Kairos local corpus over generic Stellar docs.
-            // This prevents irrelevant Stellar developer docs from dominating retrieval for "what is kairos".
+            // For product questions, prefer Kairos local corpus over generic blockchain docs.
+            // This prevents irrelevant developer docs from dominating retrieval for "what is kairos".
             const isRemoteWeb = (x: { c: IndexedChunk }) => (x.c.source || "").toLowerCase().startsWith("web ·");
             const isKairosLocal = (x: { c: IndexedChunk }) => {
                 const src = (x.c.source || "").toLowerCase();
                 return (
                     src.includes("kairos-knowledge.md") ||
                     src.includes("agent-payments.md") ||
-                    src.includes("stellar-defi.md") ||
+                    src.includes("hashkey-defi.md") ||
                     src.includes("crypto-defi-glossary.md")
                 );
             };

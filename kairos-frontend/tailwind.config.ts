@@ -68,7 +68,7 @@ export default {
         },
         success:  'hsl(var(--success))',
         payment:  'hsl(var(--payment))',
-        stellar:  'hsl(var(--stellar))',
+        'accent-teal': 'hsl(var(--accent-teal))',
       },
       borderRadius: {
         lg: "var(--radius)",

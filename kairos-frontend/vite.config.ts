@@ -10,7 +10,7 @@ export default defineConfig(({ mode }) => ({
     port: 5173,
   },
 
-  // Polyfill Node.js globals for stellar-wallets-kit dependencies
+  // Polyfill Node.js globals for web3 dependencies
   define: {
     global: 'globalThis',
     'process.env': {},

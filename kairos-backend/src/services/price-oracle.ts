@@ -52,7 +52,6 @@ const SYMBOL_TO_ID: Record<string, string> = {
     wbtc: "wrapped-bitcoin",
     link: "chainlink", chainlink: "chainlink",
     leo: "leo-token",
-    xlm: "stellar", stellar: "stellar",
     xmr: "monero", monero: "monero",
     sui: "sui",
     ltc: "litecoin", litecoin: "litecoin",

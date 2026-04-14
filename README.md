@@ -32,11 +32,11 @@ Kairos is the **agent + money** layer for crypto copilots: specialists fetch rea
 | News Scout | `news` | Crypto headlines (aggregated RSS) |
 | Yield Optimizer | `yield` | DeFi yields across 500+ protocols |
 | Tokenomics Analyzer | `tokenomics` | Supply, unlocks, inflation models |
-| Chain Scout | `stellar-scout` | HashKey/EVM account facts (balance, nonce, contract detection) |
+| Chain Scout | `chain-scout` | HashKey/EVM account facts (balance, nonce, contract detection) |
 | Perp Stats | `perp` | Perpetual futures, funding rates, open interest |
 | Protocol Stats | `protocol` | TVL, fees, revenue via DeFiLlama |
 | Bridge Monitor | `bridges` | Cross-chain bridge volumes |
-| DEX Volumes | `stellar-dex` | Top DEX volumes by chain (DeFiLlama) |
+| DEX Volumes | `dex-volumes` | Top DEX volumes by chain (DeFiLlama) |
 
 ---
 
@@ -137,10 +137,10 @@ NEWS_EVM_ADDRESS
 YIELD_EVM_ADDRESS
 TOKENOMICS_EVM_ADDRESS
 PERP_EVM_ADDRESS
-STELLAR_SCOUT_EVM_ADDRESS
+CHAIN_SCOUT_EVM_ADDRESS
 PROTOCOL_EVM_ADDRESS
 BRIDGES_EVM_ADDRESS
-STELLAR_DEX_EVM_ADDRESS
+DEX_VOLUMES_EVM_ADDRESS
 ```
 
 **Optional (app degrades gracefully):**

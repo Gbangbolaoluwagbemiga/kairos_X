@@ -22,8 +22,8 @@ const USE_HASHKEY = !KAIROS_PAYMENTS.startsWith("off");
 const PAYMENTS_OFF = KAIROS_PAYMENTS.startsWith("off");
 
 /**
- * Treasury must submit txs **one at a time**. Parallel Gemini tool calls used to race:
- * each tx reused the same account `sequence`, causing tx_bad_seq; parallel Horizon submits also time out.
+ * Treasury must submit txs **one at a time**. Parallel tool calls used to race:
+ * each tx reused the same nonce, causing reverts; parallel RPC submits also time out.
  */
 let treasuryPaymentQueue: Promise<unknown> = Promise.resolve();
 
@@ -58,7 +58,7 @@ function runTreasurySerialized<T>(fn: () => Promise<T>): Promise<T> {
 /**
  * 🤝 Agent-to-Agent Payment (A2A)
  * When a specialist agent delegates to another sub-agent, it pays from its own wallet.
- * This demonstrates true autonomous agent commerce on Stellar — agents earning and spending.
+ * This demonstrates true autonomous agent commerce on HashKey Chain — agents earning and spending.
  *
  * Agent secret keys are loaded from environment variables (set by generate-agent-wallets script).
  * Amount: 0.005 USDC per sub-delegation (half of the base rate, split economy).
@@ -69,10 +69,10 @@ const AGENT_SECRETS: Record<string, string | undefined> = {
     yield:         process.env.YIELD_AGENT_SECRET,
     tokenomics:    process.env.TOKENOMICS_AGENT_SECRET,
     perp:          process.env.PERP_AGENT_SECRET,
-    "stellar-scout": process.env.STELLAR_SCOUT_AGENT_SECRET,
+    "chain-scout": process.env.CHAIN_SCOUT_AGENT_SECRET,
     protocol:      process.env.PROTOCOL_AGENT_SECRET,
     bridges:       process.env.BRIDGES_AGENT_SECRET,
-    "stellar-dex": process.env.STELLAR_DEX_AGENT_SECRET,
+    "dex-volumes": process.env.DEX_VOLUMES_AGENT_SECRET,
 };
 
 // Optional EVM agent wallets (true A2A on HashKey Chain).
@@ -83,10 +83,10 @@ const AGENT_EVM_SECRETS: Record<string, string | undefined> = {
     yield: process.env.YIELD_EVM_PRIVATE_KEY,
     tokenomics: process.env.TOKENOMICS_EVM_PRIVATE_KEY,
     perp: process.env.PERP_EVM_PRIVATE_KEY,
-    "stellar-scout": process.env.STELLAR_SCOUT_EVM_PRIVATE_KEY,
+    "chain-scout": process.env.CHAIN_SCOUT_EVM_PRIVATE_KEY,
     protocol: process.env.PROTOCOL_EVM_PRIVATE_KEY,
     bridges: process.env.BRIDGES_EVM_PRIVATE_KEY,
-    "stellar-dex": process.env.STELLAR_DEX_EVM_PRIVATE_KEY,
+    "dex-volumes": process.env.DEX_VOLUMES_EVM_PRIVATE_KEY,
 };
 
 export interface A2APayment {
@@ -116,8 +116,8 @@ const AGENT_ORCHESTRATOR_PRIORITY: Record<string, number> = {
     oracle:         10, // Price Oracle: highest — data backbone
     protocol:        9,
     bridges:         8,
-    "stellar-dex":   7,
-    "stellar-scout": 6,
+    "dex-volumes":   7,
+    "chain-scout":   6,
     perp:            5,
     tokenomics:      4,
     yield:           3,
@@ -229,10 +229,10 @@ const createNewsScoutPayment    = (label: string) => sendAgentPayment('news', la
 const createYieldOptimizerPayment = (label: string) => sendAgentPayment('yield', label);
 const createTokenomicsPayment   = (label: string) => sendAgentPayment('tokenomics', label);
 const createPerpStatsPayment    = (label: string) => sendAgentPayment('perp', label);
-const createStellarScoutPayment = (label: string) => sendAgentPayment('stellar-scout', label);
+const createChainScoutPayment   = (label: string) => sendAgentPayment('chain-scout', label);
 const createProtocolPayment     = (label: string) => sendAgentPayment('protocol', label);
 const createBridgesPayment      = (label: string) => sendAgentPayment('bridges', label);
-const createStellarDexPayment   = (label: string) => sendAgentPayment('stellar-dex', label);
+const createDexVolumesPayment   = (label: string) => sendAgentPayment('dex-volumes', label);
 
 async function withTimeoutOptional<T>(p: Promise<T>, ms: number): Promise<T | undefined> {
     try {
@@ -438,7 +438,7 @@ function renderFastFromTools(last: Record<string, any>): string | null {
             });
             sections.push(`**Top bridges**\n${lines.join("\n")}`);
             sections.push(
-                `\n**How to use this**\n- Bridge ETH to a supported chain, then on-ramp to Stellar via an anchor/exchange if direct Stellar support isn’t listed.\n- Always verify fees + supported assets on the bridge UI before sending large amounts.`
+                `\n**How to use this**\n- Bridge assets to a supported chain, then on-ramp to HashKey Chain via a compatible bridge or exchange.\n- Always verify fees + supported assets on the bridge UI before sending large amounts.`
             );
         }
     }
@@ -602,7 +602,7 @@ function fastRouteTools(prompt: string): RoutedToolCall[] {
     );
 
     // Bridges / cross-chain
-    if (/\bbridge(s|ing)?\b|\bcross[-\s]?chain\b|\bmove\s+assets?\b|\beth\s+to\s+stellar\b|\beth\s+to\s+xlm\b/.test(sNorm)) {
+    if (/\bbridge(s|ing)?\b|\bcross[-\s]?chain\b|\bmove\s+assets?\b|\beth\s+to\s+hashkey\b|\beth\s+to\s+hsk\b/.test(sNorm)) {
         add("getBridges", {});
     }
 
@@ -789,21 +789,21 @@ async function handleGetBridges(receiptSink?: (agentId: string, txHash: string) 
     };
 }
 
-// DEX volume (repurposes former Stellar DEX agent)
+// DEX volume agent
 async function handleGetDexVolumes(chain?: string, receiptSink?: (agentId: string, txHash: string) => void) {
-    const payP = createStellarDexPayment(chain ? `dex:${chain}` : "dex:overview");
-    void payP.then((h) => { if (h) receiptSink?.("stellar-dex", h); }).catch(() => {});
+    const payP = createDexVolumesPayment(chain ? `dex:${chain}` : "dex:overview");
+    void payP.then((h) => { if (h) receiptSink?.("dex-volumes", h); }).catch(() => {});
     const data = chain ? await defillamaDex.getDexVolumeByChain(chain) : await defillamaDex.getDexVolumeOverview();
     const txHash = await withTimeoutOptional(payP, 200);
     return { data: JSON.stringify(data || { error: "Could not fetch DEX volumes" }), txHash };
 }
 
-// Chain Scout (repurposes former Stellar Scout agent): basic HashKey account facts
+// Chain Scout: basic HashKey account facts
 async function handleGetChainAccount(address: string, receiptSink?: (agentId: string, txHash: string) => void) {
     const cfg = loadHashkeyConfigFromEnv();
     const provider = new ethers.JsonRpcProvider(cfg.rpcUrl, cfg.chainId);
-    const payP = createStellarScoutPayment(`acct:${address}`);
-    void payP.then((h) => { if (h) receiptSink?.("stellar-scout", h); }).catch(() => {});
+    const payP = createChainScoutPayment(`acct:${address}`);
+    void payP.then((h) => { if (h) receiptSink?.("chain-scout", h); }).catch(() => {});
     const [bal, nonce, code] = await Promise.all([
         provider.getBalance(address).catch(() => 0n),
         provider.getTransactionCount(address).catch(() => 0),
@@ -841,7 +841,7 @@ Rules:
 - Never mention internal payment plumbing.
 - Never invent live prices, TVL, or headlines: if you didn’t get numbers from tools, don’t fabricate them.
 - Keep answers moderate length: ~6–12 lines, structured bullets + 1 short paragraph if useful.
-- If tools error, be honest about what couldn’t be verified and what to try next (short).`;
+- If tools error, be honest about what couldn't be verified and what to try next (short).`;
 
 const SYSTEM_PROMPT_VERBOSE = `You are Kairos, the premier AI agentic marketplace for the HashKey Chain ecosystem.
 You facilitate a multi-agent economy where agents can pay each other on-chain using native HSK transfers.
@@ -853,13 +853,12 @@ You facilitate a multi-agent economy where agents can pay each other on-chain us
 - For **HashKey/EVM account facts** (balance/nonce/contract detection): call **getChainAccount** with an 0x address.
 - For **prices, ATH, market cap, "how much is X"**: call **getPriceData**.
 - For **DEX volumes / top DEXs**: call **getDexVolumes**.
-- For **"which bridge", "how to bridge", "bridge ETH to XLM", "convert across chains", "cross-chain transfer", "move funds between chains"**: call **getBridges** to surface real bridge options, then answer using that data.
+- For **"which bridge", "how to bridge", "bridge ETH to HSK", "convert across chains", "cross-chain transfer", "move funds between chains"**: call **getBridges** to surface real bridge options, then answer using that data.
 - For **simple greetings** ("hi", "hey", "hello", "good morning", thanks): keep the reply warm and short; the system may still fetch a tiny **headline pulse** for context — do not contradict live headlines if present.
 
 **IMPORTANT CONTEXT:**
 - You operate exclusively in the crypto/blockchain/DeFi space, with a special focus on HashKey Chain (EVM) and the HSK token.
 - Prefer HashKey/EVM terminology (EOA/contract, gas, wei/ether units, chainId=133).
-- Do not mention Stellar/Soroban/Horizon/x402/Freighter unless the user explicitly asks about them.
 
 **On-chain payments (NEVER mention in responses):**
 - Payments happen automatically behind the scenes — the UI shows them as badges.
@@ -867,7 +866,7 @@ You facilitate a multi-agent economy where agents can pay each other on-chain us
 - Do not add any payment footnote, receipt line, or financial disclosure at the end of responses.
 
 **Your Capabilities:**
-- PRICE ORACLE: Real-time prices for any crypto (XLM, USDC, BTC, ETH, etc.) via CoinGecko.
+- PRICE ORACLE: Real-time prices for any crypto (HSK, USDC, BTC, ETH, etc.) via CoinGecko.
 - CHAIN SCOUT: HashKey/EVM account facts (balance, nonce, contract detection).
 - NEWS SCOUT: Real-time crypto news and sentiment analysis.
 - PERP STATS: Perpetual futures funding rates, open interest, and volume.
@@ -879,13 +878,9 @@ You facilitate a multi-agent economy where agents can pay each other on-chain us
 - ALL-TIME HIGH (ATH): When using the Price Oracle, always report the ATH and the date it was reached if available. The user expects professional, 'top tier' financial responses.
 - Historical context: If the current price is significantly below the ATH, mention the percentage drawdown.
 
-**If the user asks about Stellar:**
-- You may answer generally from background knowledge, but keep the focus on HashKey unless the user insists.
-- Do not claim to have live Stellar data or to have used Stellar tools (none exist in this build).
-
 **Handling Tool Failures & Truthfulness (STRICT):**
 - If tools return valid structured numbers (prices/TVL/etc.), treat those as authoritative for this response.
-- If tools are missing/errored for a factual claim, **do not fabricate** that claim; say what you can/can’t verify and the fastest next check (one short sentence).
+- If tools are missing/errored for a factual claim, **do not fabricate** that claim; say what you can/can't verify and the fastest next check (one short sentence).
 - If searchWeb indicates offline mode (liveWeb:false), do not pretend you browsed live pages.
 - Keep apologies minimal; prioritize actionable next steps.
 
@@ -954,7 +949,7 @@ const getProtocolStatsFunction = {
 // Function declaration for bridges
 const getBridgesFunction = {
     name: "getBridges",
-    description: "Get top cross-chain bridges ranked by TVL. Use this whenever users ask: 'which bridge should I use?', 'how do I bridge ETH to XLM?', 'what bridges support Stellar?', 'how to convert ETH to XLM', 'move funds from Ethereum to Stellar', 'cross-chain transfer options', or any question about bridging assets between blockchains. Also use for bridge volume or activity questions.",
+    description: "Get top cross-chain bridges ranked by TVL. Use this whenever users ask: 'which bridge should I use?', 'how do I bridge ETH to HSK?', 'what bridges support HashKey?', 'how to convert ETH to HSK', 'move funds to HashKey Chain', 'cross-chain transfer options', or any question about bridging assets between blockchains. Also use for bridge volume or activity questions.",
     parameters: {
         type: SchemaType.OBJECT,
         properties: {},
@@ -977,7 +972,7 @@ const getHacksFunction = {
 const getNewsFunction = {
     name: "getNews",
     description:
-        "Get recent crypto news headlines from major outlets (RSS aggregation). Use for: 'latest crypto news', 'what's happening in crypto', 'breaking news', category filters (bitcoin, defi, breaking). If the user passes a Stellar public key (G... 56 chars) as the query, returns recent on-chain operations for that account instead. For long-form 'why is the market moving' analysis, prefer searchWeb.",
+        "Get recent crypto news headlines from major outlets (RSS aggregation). Use for: 'latest crypto news', 'what's happening in crypto', 'breaking news', category filters (bitcoin, defi, breaking). For long-form 'why is the market moving' analysis, prefer searchWeb.",
     parameters: {
         type: SchemaType.OBJECT,
         properties: {
@@ -1120,13 +1115,13 @@ const getChainAccountFunction = {
 // Function declaration for Portfolio Rebalancer — multi-hop orchestration demo
 const getPortfolioRebalanceFunction = {
     name: "getPortfolioRebalance",
-    description: "Analyze portfolio holdings and recommend rebalancing strategy. This orchestrates MULTIPLE agents: Price Oracle (market prices), Yield Optimizer (best yields), and Stellar Scout (Stellar DeFi). Use when users ask about 'rebalance my portfolio', 'optimize holdings', 'portfolio strategy', 'where should I move funds', or 'best allocation'. Requires asset list.",
+    description: "Analyze portfolio holdings and recommend rebalancing strategy. This orchestrates MULTIPLE agents: Price Oracle (market prices), Yield Optimizer (best yields), and Chain Scout (on-chain context). Use when users ask about 'rebalance my portfolio', 'optimize holdings', 'portfolio strategy', 'where should I move funds', or 'best allocation'. Requires asset list.",
     parameters: {
         type: SchemaType.OBJECT,
         properties: {
             assets: {
                 type: SchemaType.STRING,
-                description: "Comma-separated asset symbols to analyze, e.g., 'ETH,USDC,XLM,BTC'",
+                description: "Comma-separated asset symbols to analyze, e.g., 'ETH,USDC,HSK,BTC'",
             },
             riskProfile: {
                 type: SchemaType.STRING,
@@ -1221,14 +1216,14 @@ async function handleSearchWeb(
 async function handleGetHacks(): Promise<{ data: string; txHash?: string }> {
     console.log(`[Gemini] ⚠️ Getting recent DeFi hacks...`);
 
-    const payP = withTimeoutOptional(createStellarScoutPayment(`hacks`), PAYMENT_CAPTURE_TIMEOUT_MS);
+    const payP = withTimeoutOptional(createChainScoutPayment(`hacks`), PAYMENT_CAPTURE_TIMEOUT_MS);
     const hacks = await defillama.getHacks();
 
     if (!hacks) {
         return { data: JSON.stringify({ error: "Could not fetch hacks data. Try again later." }) };
     }
 
-    // Pay Stellar Scout for research
+    // Pay Chain Scout for research
     const txHash = await payP;
 
     return {
@@ -1316,13 +1311,13 @@ async function handleGetTrending(): Promise<{ data: string; txHash?: string }> {
     return {
         data: JSON.stringify({
             trending: [{
-                topic: "Stellar SDEX Activity (XLM/USDC)",
+                topic: "HashKey Chain DeFi Activity (HSK/USDC)",
                 count: trending.trade_count,
                 sentiment: parseFloat(trending.close) >= parseFloat(trending.open) ? "bullish" : "bearish",
-                headline: `24h Volume: ${parseFloat(trending.base_volume).toLocaleString()} XLM | Avg Price: ${parseFloat(trending.avg).toFixed(4)} USDC`
+                headline: `24h Volume: ${parseFloat(trending.base_volume).toLocaleString()} HSK | Avg Price: ${parseFloat(trending.avg).toFixed(4)} USDC`
             }],
             articlesAnalyzed: trending.trade_count,
-            timeWindow: "24h (Real-time Horizon Data)"
+            timeWindow: "24h (Real-time on-chain data)"
         }),
         txHash
     };
@@ -1541,7 +1536,7 @@ async function handleGetTokenomics(symbol: string): Promise<{ data: string; txHa
 
 /**
  * Portfolio Rebalancer — Multi-Agent Orchestration Demo
- * Calls 3+ agents (Oracle, Yield, Stellar Scout) and combines their data.
+ * Calls 3+ agents (Oracle, Yield, Chain Scout) and combines their data.
  * This triggers A2A payments: the primary orchestrating agent pays sub-agents.
  */
 async function handleGetPortfolioRebalance(
@@ -1572,7 +1567,7 @@ async function handleGetPortfolioRebalance(
 
     // 3. Get chain/account context (Chain Scout agent)
     scoutQueryCount++;
-    const payScoutP = createStellarScoutPayment(`rebal:chain`);
+    const payScoutP = createChainScoutPayment(`rebal:chain`);
 
     // Wait for all data + payments
     const [prices, yields, oracleTx, yieldTx, scoutTx] = await Promise.all([
@@ -1585,7 +1580,7 @@ async function handleGetPortfolioRebalance(
 
     if (oracleTx) txHashes["oracle"] = oracleTx;
     if (yieldTx) txHashes["yield"] = yieldTx;
-    if (scoutTx) txHashes["stellar-scout"] = scoutTx;
+    if (scoutTx) txHashes["chain-scout"] = scoutTx;
 
     // Build portfolio analysis
     const portfolioData = prices.map(({ symbol, priceData }) => ({
@@ -1603,7 +1598,7 @@ async function handleGetPortfolioRebalance(
     const recommendations = {
         riskProfile,
         assets: portfolioData,
-        agentsUsed: ["oracle", "yield", "stellar-scout"],
+        agentsUsed: ["oracle", "yield", "chain-scout"],
         yieldOpportunities: filteredYields.map((y) => ({
             protocol: y.protocol,
             chain: y.chain,
@@ -1611,13 +1606,13 @@ async function handleGetPortfolioRebalance(
             apy: y.apy,
             tvl: y.tvl,
         })),
-        stellarYields: [],
+        hashkeyYields: [],
         strategy: riskProfile === "conservative"
             ? "Focus on stable assets (USDC, USDT) with low-risk yields (3-5% APY)"
             : riskProfile === "moderate"
             ? "Balanced mix of volatile assets and yield-bearing positions (5-10% APY)"
             : "Maximize APY with higher volatility exposure (10%+ APY)",
-        multiAgentNote: `This analysis was coordinated across multiple specialist agents (market data, DeFi yields, and chain/account context).`,
+        multiAgentNote: `This analysis was coordinated across multiple specialist agents on HashKey Chain (market data, DeFi yields, and chain/account context).`,
     };
 
     return { data: JSON.stringify(recommendations), txHashes };
@@ -1791,17 +1786,17 @@ export async function generateResponse(
                 return { key: resultKey, name: call.name, raw: r.data };
             }
             if (call.name === "getDexVolumes") {
-                agentsUsed.add("stellar-dex");
+                agentsUsed.add("dex-volumes");
                 const args = call.args as { chain?: string };
                 const r = await withTimeout(handleGetDexVolumes(args.chain, receiptSink), perCallTimeout);
-                if (r.txHash) txHashes["stellar-dex"] = r.txHash;
+                if (r.txHash) txHashes["dex-volumes"] = r.txHash;
                 return { key: resultKey, name: call.name, raw: r.data };
             }
             if (call.name === "getChainAccount") {
-                agentsUsed.add("stellar-scout");
+                agentsUsed.add("chain-scout");
                 const args = call.args as { address: string };
                 const r = await withTimeout(handleGetChainAccount(args.address, receiptSink), perCallTimeout);
-                if (r.txHash) txHashes["stellar-scout"] = r.txHash;
+                if (r.txHash) txHashes["chain-scout"] = r.txHash;
                 return { key: resultKey, name: call.name, raw: r.data };
             }
 

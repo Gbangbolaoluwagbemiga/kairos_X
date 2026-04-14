@@ -13,13 +13,13 @@ const categories = ['All', 'DeFi', 'Analytics', 'Trading', 'Infrastructure', 'Re
 const AGENT_META: Record<string, { icon: any; color: string; gradient: string }> = {
   'oracle':        { icon: TrendingUp,     color: '#a78bfa', gradient: 'from-violet-500/20 to-purple-600/10' },
   'news':          { icon: Newspaper,      color: '#60a5fa', gradient: 'from-blue-500/20 to-sky-600/10'     },
-  'stellar-scout': { icon: BarChart3,      color: '#34d399', gradient: 'from-emerald-500/20 to-teal-600/10' },
+  'chain-scout':  { icon: BarChart3,      color: '#34d399', gradient: 'from-emerald-500/20 to-teal-600/10' },
   'yield':         { icon: Coins,          color: '#fbbf24', gradient: 'from-yellow-500/20 to-amber-600/10' },
   'tokenomics':    { icon: PieChart,       color: '#f87171', gradient: 'from-red-500/20 to-rose-600/10'     },
   'perp':          { icon: Activity,       color: '#38bdf8', gradient: 'from-sky-400/20 to-cyan-600/10'     },
   'protocol':      { icon: Database,       color: '#818cf8', gradient: 'from-indigo-500/20 to-blue-600/10'  },
   'bridges':       { icon: ArrowLeftRight, color: '#fb7185', gradient: 'from-rose-400/20 to-pink-600/10' },
-  'stellar-dex':   { icon: Zap,            color: '#facc15', gradient: 'from-yellow-400/20 to-amber-600/10'},
+  'dex-volumes':  { icon: Zap,            color: '#facc15', gradient: 'from-yellow-400/20 to-amber-600/10'},
 };
 
 interface Provider {

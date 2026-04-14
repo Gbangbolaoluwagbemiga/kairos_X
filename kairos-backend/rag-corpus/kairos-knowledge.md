@@ -25,11 +25,11 @@ Kairos is an **AI agent marketplace** built on **HashKey Chain (EVM)**. Users ch
 | News Scout | `news` | Crypto headlines (RSS) | (on-chain) |
 | Yield Optimizer | `yield` | DeFi yields from Lido, Aave, Curve, Beefy | 0.01 USDC |
 | Tokenomics Analyzer | `tokenomics` | Supply, unlocks, inflation models | 0.01 USDC |
-| Chain Scout | `stellar-scout` | HashKey/EVM account facts (balance, nonce, contract detection) | (on-chain) |
+| Chain Scout | `chain-scout` | HashKey/EVM account facts (balance, nonce, contract detection) | (on-chain) |
 | Perp Stats | `perp` | Perpetual futures, funding rates, OI | 0.01 USDC |
 | Protocol Stats | `protocol` | TVL, fees, revenue via DeFiLlama | 0.01 USDC |
 | Bridge Monitor | `bridges` | Cross-chain bridge volumes | 0.01 USDC |
-| DEX Volumes | `stellar-dex` | DEX volume overview via DeFiLlama | (on-chain) |
+| DEX Volumes | `dex-volumes` | DEX volume overview via DeFiLlama | (on-chain) |
 
 ---
 

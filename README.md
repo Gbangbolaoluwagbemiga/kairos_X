@@ -46,6 +46,7 @@ Kairos is the **agent + money** layer for crypto copilots: specialists fetch rea
 3) **Run the onchain activity loop**
 - Call `POST /api/demo/run-cycles` (suggested: `cycles=50`, `fundAgents=true`)
 - Result JSON includes **tx hashes + explorer links**
+- **Demo script + prompt templates:** see [`docs/HACKATHON_DEMO.md`](docs/HACKATHON_DEMO.md) · helper: `kairos-backend/scripts/run-demo-loop.sh`
 
 4) **Show Uniswap integration (mandatory module)**
 - Call `GET /api/uniswap/v3/quote?tokenIn=...&tokenOut=...&fee=3000&amountIn=...`

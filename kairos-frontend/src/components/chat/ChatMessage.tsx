@@ -7,6 +7,7 @@ import { useState, useEffect } from 'react';
 import { useWallet } from '@/contexts/WalletContext';
 import { PaymentPulse } from './PaymentPulse';
 import { ACTIVE_NATIVE_SYMBOL, txUrl } from '@/lib/chain';
+import { toast } from 'sonner';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
@@ -105,9 +106,20 @@ export function ChatMessage({ id, content, isUser, timestamp, imagePreview, agen
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messageId: id, wallet: address, isPositive, agentId: primaryAgent }),
       });
-      const d = await res.json();
+      const d = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        toast.error(d?.error || 'Could not save rating. Check API URL / network.');
+        return;
+      }
       if (d.success) {
         setRating(isPositive);
+        if (d.persisted === 'memory') {
+          toast.message('Rating saved (server memory only)', {
+            description: 'Add SUPABASE_URL + SUPABASE_ANON_KEY on Railway for persistent ratings on Agents.',
+          });
+        } else {
+          toast.success('Thanks — rating saved');
+        }
         // Also rate additional agents (fire-and-forget, different messageId suffix)
         for (let i = 1; i < agents.length; i++) {
           fetch(`${API_BASE_URL}/ratings`, {
@@ -116,8 +128,13 @@ export function ChatMessage({ id, content, isUser, timestamp, imagePreview, agen
             body: JSON.stringify({ messageId: `${id}-${i}`, wallet: address, isPositive, agentId: agents[i] }),
           }).catch(() => {});
         }
+      } else {
+        toast.error(d?.error || 'Rating failed');
       }
-    } catch (e) { console.error('Rate error:', e); }
+    } catch (e) {
+      console.error('Rate error:', e);
+      toast.error('Network error — could not reach backend');
+    }
     finally { setIsRating(false); }
   };
 

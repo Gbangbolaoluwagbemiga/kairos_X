@@ -282,22 +282,51 @@ export async function rateMessage(
 ): Promise<boolean> {
     if (!supabase) return false;
 
-    const { error } = await supabase
-        .from('message_ratings')
-        .upsert({
-            message_id: messageId,
-            user_address: userAddress.toLowerCase(),
-            is_positive: isPositive,
-            agent_id: agentId || null,
-        }, {
-            onConflict: 'message_id,user_address',
-        });
+    const row = {
+        message_id: messageId,
+        user_address: userAddress.toLowerCase(),
+        is_positive: isPositive,
+        agent_id: agentId || null,
+    };
 
-    if (error) {
-        console.error('[Supabase] Failed to rate message:', error);
+    const { error: upsertErr } = await supabase
+        .from('message_ratings')
+        .upsert(row, { onConflict: 'message_id,user_address' });
+
+    if (!upsertErr) return true;
+
+    // Some projects created the table before the composite unique existed — fall back to update/insert.
+    console.warn('[Supabase] upsert failed, trying update/insert:', upsertErr);
+
+    const { data: existing, error: selErr } = await supabase
+        .from('message_ratings')
+        .select('id')
+        .eq('message_id', messageId)
+        .eq('user_address', userAddress.toLowerCase())
+        .maybeSingle();
+
+    if (selErr) {
+        console.error('[Supabase] Failed to rate message (select):', selErr);
         return false;
     }
 
+    if (existing?.id) {
+        const { error: updErr } = await supabase
+            .from('message_ratings')
+            .update({ is_positive: isPositive, agent_id: agentId || null })
+            .eq('id', existing.id);
+        if (updErr) {
+            console.error('[Supabase] Failed to rate message (update):', updErr);
+            return false;
+        }
+        return true;
+    }
+
+    const { error: insErr } = await supabase.from('message_ratings').insert(row);
+    if (insErr) {
+        console.error('[Supabase] Failed to rate message (insert):', insErr);
+        return false;
+    }
     return true;
 }
 
